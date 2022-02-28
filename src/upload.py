@@ -22,8 +22,8 @@ def upload_file(
         upload_time: datetime,
         thumbnail_path: str = None,
 ):
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "ytcp-button#create-icon"))).click()
-    WebDriverWait(driver, 20).until(
+    WebDriverWait(driver, 50).until(EC.element_to_be_clickable((By.CSS_SELECTOR, "ytcp-button#create-icon"))).click()
+    WebDriverWait(driver, 50).until(
         EC.element_to_be_clickable((By.XPATH, '//tp-yt-paper-item[@test-id="upload-beta"]'))
     ).click()
     video_input = driver.find_element_by_xpath('//input[@type="file"]')
@@ -33,9 +33,12 @@ def upload_file(
     _set_advanced_settings(driver, game, kids)
     # Go to visibility settings
     for i in range(3):
+        sleep(5)
         WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.ID, "next-button"))).click()
+    for i in range(1):
+        WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, "PUBLIC"))).click()
 
-    _set_time(driver, upload_time)
+   # _set_time(driver, upload_time)
     _wait_for_processing(driver)
     # Go back to endcard settings
     driver.find_element_by_css_selector("#step-badge-1").click()
@@ -69,11 +72,11 @@ def _wait_for_processing(driver):
 
 
 def _set_basic_settings(driver: WebDriver, title: str, description: str, thumbnail_path: str = None):
-    title_input: WebElement = WebDriverWait(driver, 20).until(
+    title_input: WebElement = WebDriverWait(driver, 50).until(
         EC.element_to_be_clickable(
             (
                 By.XPATH,
-                '//ytcp-mention-textbox[@label="Title"]//div[@id="textbox"]',
+                '//ytcp-social-suggestions-textbox[@label="Title"]//div[@id="textbox"]',
 
             )
         )
@@ -81,7 +84,7 @@ def _set_basic_settings(driver: WebDriver, title: str, description: str, thumbna
 
     # Input meta data (title, description, etc ... )
     description_input: WebElement = driver.find_element_by_xpath(
-        '//ytcp-mention-textbox[@label="Description"]//div[@id="textbox"]'
+        '//ytcp-social-suggestions-textbox[@label="Description"]//div[@id="textbox"]'
     )
     thumbnail_input: WebElement = driver.find_element_by_css_selector(
         "input#file-loader"
@@ -139,7 +142,7 @@ def _set_endcard(driver: WebDriver):
 
 def _set_time(driver: WebDriver, upload_time: datetime):
     # Start time scheduling
-    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, "SCHEDULE"))).click()
+    WebDriverWait(driver, 20).until(EC.element_to_be_clickable((By.NAME, "PUBLIC"))).click()
 
     # Open date_picker
     driver.find_element_by_css_selector("#datepicker-trigger > ytcp-dropdown-trigger:nth-child(1)").click()
@@ -159,4 +162,4 @@ def _set_time(driver: WebDriver, upload_time: datetime):
     # Transform time into required format: 8:15 PM
     time_str = upload_time.strftime("%I:%M %p").strip("0")
     time = [time for time in time_list[2:] if time.text == time_str][0]
-    time.click()
+ 
